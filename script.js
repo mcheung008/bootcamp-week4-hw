@@ -1,104 +1,192 @@
-const startButton = document.getElementById('start-btn')
-const nextButton = document.getElementById('next-btn')
-const questionContainerElement = document.getElementById('question-container')
-const questionElement = document.getElementById('question')
-const answerButtonsElement = document.getElementById('answer-buttons')
+function initQuiz() {
 
-let shuffledQuestions, currentQuestionIndex
+  let remainingTime = 0;
+  const startBtnEl = document.getElementById("startBtn");
+  const remainingTimeEl = document.getElementById("remainingTime");
+  const finalScoreEl = document.getElementById("finalScore");
+  const startScreenEl = document.getElementById("startScreen");
+  const quizScreenEl = document.getElementById("quizScreen");
+  const finalScreenEl = document.getElementById("finalScreen");
+  const submitBtnEl = document.getElementById("submitBtn");
+  const highScoreBtnEl = document.getElementById("highscores");
+  const highScoreBoxEl = document.getElementById("highScoreBox");
+  let highScores = [];
 
-startButton.addEventListener('click', startGame)
-nextButton.addEventListener('click', () => {
-  currentQuestionIndex++
-  setNextQuestion()
-})
+  if (JSON.parse(localStorage.getItem('scores')) !== null) {
+    highScores = JSON.parse(localStorage.getItem("scores"));
+  }
 
-function startGame() {
-  startButton.classList.add('hide')
-  shuffledQuestions = questions.sort(() => Math.random() - .5)
-  currentQuestionIndex = 0
-  questionContainerElement.classList.remove('hide')
-  setNextQuestion()
-}
+  function startQuiz() {
 
-function setNextQuestion() {
-  resetState()
-  showQuestion(shuffledQuestions[currentQuestionIndex])
-}
+    startScreenEl.setAttribute("class", "container d-none");
+    quizScreenEl.setAttribute("class", "container");
+    remainingTime = 30;
+    remainingTimeEl.setAttribute("value", remainingTime);
 
-function showQuestion(question) {
-  questionElement.innerText = question.question
-  question.answers.forEach(answer => {
-    const button = document.createElement('button')
-    button.innerText = answer.text
-    button.classList.add('btn')
-    if (answer.correct) {
-      button.dataset.correct = answer.correct
+    let rowEl = null;
+    let colEl = null;
+    let headerEl = null;
+    let buttonEl = null;
+    let currentQuestion = 1;
+    let score = 0;
+
+    let myInterval = setInterval(function () {
+      if (remainingTime < 1) {
+        clearInterval(myInterval);
+        quizScreenEl.setAttribute("class", "container d-none");
+        finalScreenEl.setAttribute("class", "container");
+        return;
+      }
+      remainingTime = remainingTime - 1;
+      remainingTimeEl.setAttribute("value", remainingTime);
+    }, 1000);
+
+    let clickTimeout = false;
+
+    function generateQuestion(questionNum) {
+
+      quizScreenEl.innerHTML = "";
+      rowEl = document.createElement("div");
+      rowEl.setAttribute("class", "row");
+      quizScreenEl.append(rowEl);
+
+      colEl = document.createElement("div");
+      colEl.setAttribute("class", "col-0 col-sm-2");
+      rowEl.append(colEl);
+
+      colEl = document.createElement("div");
+      colEl.setAttribute("class", "col-12 col-sm-8");
+      rowEl.append(colEl);
+
+      colEl = document.createElement("div");
+      colEl.setAttribute("class", "col-0 col-sm-2");
+      rowEl.append(colEl);
+
+      colEl = rowEl.children[1];
+      rowEl = document.createElement("div");
+      rowEl.setAttribute("class", "row mb-3");
+      colEl.append(rowEl);
+
+      colEl = document.createElement("div");
+      colEl.setAttribute("class", "col-12");
+      rowEl.append(colEl);
+
+      headerEl = document.createElement("h2");
+      headerEl.innerHTML = questions[questionNum - 1].question;
+      colEl.append(headerEl);
+
+      colEl = quizScreenEl.children[0].children[1];
+      for (let i = 0; i < 4; i++) {
+        let rowEl = document.createElement("div");
+        rowEl.setAttribute("class", "row mb-1");
+        colEl.append(rowEl);
+
+        let colEl2 = document.createElement("div");
+        colEl2.setAttribute("class", "col-12");
+        rowEl.append(colEl2);
+
+        buttonEl = document.createElement("button");
+        buttonEl.setAttribute("class", "btn btn-light");
+        buttonEl.setAttribute("type", "button");
+        buttonEl.innerHTML = questions[currentQuestion - 1].choices[i];
+        colEl2.append(buttonEl);
+        buttonEl.addEventListener("click", function () {
+
+          if (clickTimeout) {
+            return;
+          }
+          clickTimeout = true;
+          clearInterval(myInterval);
+          let colEl = quizScreenEl.children[0].children[1];
+          let rowEl = document.createElement("div");
+          rowEl.setAttribute("class", "row border-top");
+          colEl.append(rowEl);
+
+          colEl = document.createElement("div");
+          colEl.setAttribute("class", "col-12");
+          rowEl.append(colEl);
+
+          let parEl = document.createElement("p");
+          colEl.append(parEl);
+          if (this.innerHTML === questions[currentQuestion - 1].answer) {
+            parEl.innerHTML = "Correct!";
+            remainingTime = remainingTime + 3;
+          } else {
+            parEl.innerHTML = "Incorrect";
+            remainingTime = remainingTime - 3;
+            if (remainingTime < 0) {
+              remainingTime = 0;
+            }
+            remainingTimeEl.setAttribute("value", remainingTime);
+          }
+          currentQuestion++;
+          if (currentQuestion > questions.length) {
+            score = remainingTime;
+          }
+          setTimeout(function () {
+
+            if (currentQuestion > questions.length) {
+
+              quizScreenEl.setAttribute("class", "container d-none");
+              finalScreenEl.setAttribute("class", "container");
+              finalScoreEl.setAttribute("value", score);
+            } else {
+              generateQuestion(currentQuestion);
+              clickTimeout = false;
+              myInterval = setInterval(function () {
+                if (remainingTime < 1) {
+                  clearInterval(myInterval);
+                  quizScreenEl.setAttribute("class", "container d-none");
+                  finalScreenEl.setAttribute("class", "container");
+                  return;
+                }
+                remainingTime = remainingTime - 1;
+                remainingTimeEl.setAttribute("value", remainingTime);
+              }, 1000);
+            }
+          }, 1000);
+        });
+      }
+
     }
-    button.addEventListener('click', selectAnswer)
-    answerButtonsElement.appendChild(button)
-  })
+
+    function saveHighScore() {
+      let initialsEl = document.getElementById("enterInitials");
+      let newHighScore = {
+        initials: initialsEl.value,
+        highScore: score
+      };
+      console.log(newHighScore);
+      highScores.push(newHighScore);
+      console.log(highScores);
+      localStorage.setItem("scores", JSON.stringify(highScores));
+      }
+      submitBtnEl.addEventListener("click", saveHighScore);
+
+      generateQuestion(currentQuestion);
+      }
+
+      startBtnEl.addEventListener("click", startQuiz);
+      highScoreBtnEl.addEventListener("click", function () {
+      startScreenEl.setAttribute("class", "container d-none");
+      quizScreenEl.setAttribute("class", "container d-none");
+      finalScreenEl.setAttribute("class", "container d-none");
+      highScoreBoxEl.setAttribute("class", "container");
+      let colEl = document.getElementById("highscore-table");
+      for (i = 0; i < highScores.length; i++) {
+      let rowEl = document.createElement("div");
+      rowEl.setAttribute("class", "row mb-1");
+      colEl.append(rowEl);
+
+      let colEl2 = document.createElement("div");
+      colEl2.setAttribute("class", "col-12 text-center");
+      rowEl.append(colEl2);
+
+      let parEl = document.createElement("div");
+      parEl.innerHTML = "Initials: " + highScores[i].initials + "   Score: " + highScores[i].highScore;
+      colEl2.append(parEl);
+    }
+  });
 }
 
-function resetState() {
-  clearStatusClass(document.body)
-  nextButton.classList.add('hide')
-  while (answerButtonsElement.firstChild) {
-    answerButtonsElement.removeChild(answerButtonsElement.firstChild)
-  }
-}
-
-function selectAnswer(e) {
-  const selectedButton = e.target
-  const correct = selectedButton.dataset.correct
-  setStatusClass(document.body, correct)
-  Array.from(answerButtonsElement.children).forEach(button => {
-    setStatusClass(button, button.dataset.correct)
-  })
-  if (shuffledQuestions.length > currentQuestionIndex + 1) {
-    nextButton.classList.remove('hide')
-  } else {
-    startButton.innerText = 'Restart'
-    startButton.classList.remove('hide')
-  }
-}
-
-function setStatusClass(element, correct) {
-  clearStatusClass(element)
-  if (correct) {
-    element.classList.add('correct')
-  } else {
-    element.classList.add('wrong')
-  }
-}
-
-function clearStatusClass(element) {
-  element.classList.remove('correct')
-  element.classList.remove('wrong')
-}
-
-const questions = [
-  {
-    question: 'What's the first thing a caterpillar usually eats after it's born?',
-    answers: [
-      { text: '4', correct: true },
-      { text: '22', correct: false }
-    ]
-  },
-    
-  {
-    question: 'Is web development fun?',
-    answers: [
-      { text: 'Kinda', correct: false },
-      { text: 'YES!!!', correct: true },
-      { text: 'Um no', correct: false },
-      { text: 'IDK', correct: false }
-    ]
-  },
-  {
-    question: 'What is 4 * 2?',
-    answers: [
-      { text: '6', correct: false },
-      { text: '8', correct: true }
-    ]
-  }
-]
+initQuiz();

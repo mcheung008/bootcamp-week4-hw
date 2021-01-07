@@ -7,79 +7,92 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
         integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-    <link href="style.css" rel="stylesheet">
+    <link href="./style.css" rel="stylesheet">
     <script defer src="script.js"></script>
-    <title>Quiz App</title>
+    <title>Animal Quiz App</title>
 </head>
 
 <body>
-    <div class="container">
-        <div id="question-container" class="hide">
-            <div id="question1">What's the first thing a caterpillar usually eats after it's born?</div>
-            <div id="answer-buttons" class="btn-grid">
-                <button class="btn">Other bugs</button>
-                <button class="btn">Grass</button>
-                <button class="btn">Its own eggshell</button>
-                <button class="btn">Spiders</button>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container navbar-container mx-0">
+            <div class="row w-100">
+                <div class="col-4 col-md-2">
+                    <button type="button" id="highscores" class="btn btn-secondary">View High Scores</button>
+                </div>
+                <div class="col-3 col-md-7"></div>
+                <div class="col-5 col-md-3">
+                    <form>
+                        <div class="form-group row">
+                            <label for="remainingTime" class="col-sm-7 col-form-label">Remaining Time</label>
+                            <div class="col-sm-5">
+                                <input type="number" readonly class="form-control" id="remainingTime" placeholder="0">
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
+    </nav>
 
-        <div id="question-container" class="hide">
-            <div id="question2">What animal has the longest lifespan?</div>
-            <div id="answer-buttons" class="btn-grid">
-                <button class="btn">Giant Tortoise</button>
-                <button class="btn">Locust</button>
-                <button class="btn">Elephant</button>
-                <button class="btn">Blue whale</button>
+    <div id="startScreen" class="container">
+        <div class="row mb-3">
+            <div class="col-12 text-center">
+                <h1>Animal Quiz App</h1>
             </div>
         </div>
-
-        <div id="question-container" class="hide">
-            <div id="question3">What is the only mammal capable of true flight?</div>
-            <div id="answer-buttons" class="btn-grid">
-                <button class="btn">Ocelot</button>
-                <button class="btn">Bat</button>
-                <button class="btn">Hummingbird</button>
-                <button class="btn">Flying Squirrel</button>
+        <div class="row mb-3">
+            <div class="col-12 text-center">
+                <p>Answer all the questions before the timer runs out! Warning: WRONG answers will deduct 3 seconds off timer!
+                </p>
             </div>
         </div>
-
-        <div id="question-container" class="hide">
-            <div id="question4">What is the fastest flying bird in the world?</div>
-            <div id="answer-buttons" class="btn-grid">
-                <button class="btn">Spine-tailed Swift</button>
-                <button class="btn">Harpy Eagle</button>
-                <button class="btn">Peregrine Falcon</button>
-                <button class="btn">Horned Sungem</button>
+        <div class="row">
+            <div class="col-12 text-center">
+                <button id="startBtn" type="button" class="btn btn-primary btn-lg">Start Quiz</button>
             </div>
-        </div>
-
-        <div id="question-container" class="hide">
-            <div id="question5">At most, how many pounds of meat can a tiger consume at one time?</div>
-            <div id="answer-buttons" class="btn-grid">
-                <button class="btn">88</button>
-                <button class="btn">1000</button>
-                <button class="btn">250</button>
-                <button class="btn">13</button>
-            </div>
-        </div>
-
-
-        <div class="controls">
-            <button id="start-btn" class="start-btn btn">Start</button>
-            <button id="next-btn" class="next-btn btn hide">Next</button>
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
-        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
-        crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
-        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
-        crossorigin="anonymous"></script>
+    <div id="quizScreen" class="container d-none">
+
+    </div>
+    <div id="finalScreen" class="container d-none">
+        <div class="row">
+            <div class="col-12 text-center">
+                <form>
+                    <div class="form-group row">
+                        <label for="finalScore" class="col-sm-7 col-form-label">Final Score</label>
+                        <div class="col-sm-5">
+                            <input type="number" readonly class="form-control" id="finalScore" placeholder="0">
+                        </div>
+                    </div>
+                </form>
+                <form>
+                    <div class="form-group">
+                        <label for="enterInitials">Enter your Initials!</label>
+                        <input type="text" class="form-control" id="enterInitials" placeholder="Enter initials">
+                    </div>
+                    <button id="submitBtn" type="button" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div id="highScoreBox" class="container d-none">
+        <div class="row">
+            <div class="col-2"></div>
+            <div id="highscore-table" class="col-8">
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <h2>High Scores</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-2"></div>
+        </div>
+    </div>
+
+    <script src="./questions.js"></script>
+    <script src="./script.js"></script>
 </body>
 
 </html>
